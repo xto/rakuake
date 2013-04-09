@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+require File.dirname(__FILE__)+'/lib/rakuake'
+
+working_directory = ARGV[0]
+working_directory = "~" if working_directory.nil?
+
+def setup_guard(dir)
+  Rakuake.new_session("Guard", dir)
+  Rakuake.run_command("BUNDLE_GEMFILE=Gemfile_xto bundle exec guard start")
+end
+
+def setup_rails_console(dir)
+  Rakuake.new_session("\"Rails Console\"",dir)
+  Rakuake.run_command("BUNDLE_GEMFILE=Gemfile_xto bundle exec rails c")
+end
+
+def setup_rails_server(dir)
+  Rakuake.new_session("\"Rails Server\"",dir)
+  Rakuake.run_command("BUNDLE_GEMFILE=Gemfile_xto bundle exec rails s")
+end
+
+def setup_gollum(dir)
+  Rakuake.new_session("\"Gollum\"", "#{dir}/../wiki")
+  Rakuake.run_command("bundle exec guard start -G guard_xto")
+end
+
+setup_guard(working_directory)
+Rakuake.new_session("Git", working_directory)
+setup_rails_console(working_directory)
+setup_rails_server(working_directory)
+setup_gollum(working_directory)
